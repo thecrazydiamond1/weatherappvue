@@ -40,7 +40,7 @@ The temperature and weather conditions (like "Clear", "Rain", etc.) are displaye
       return {
         api_key: process.env.VUE_APP_API_KEY,
         url_base: process.env.VUE_APP_API_BASE,
-        query: 'Mahendranagar',
+        query: '',
         weather: {},
       };
     },
@@ -102,21 +102,21 @@ The temperature and weather conditions (like "Clear", "Rain", etc.) are displaye
           .catch(error => {
             console.error('Error fetching weather data for current location:', error);
             // Fallback to a default location if fetching fails
-            this.query = 'Mahendranagar';
+            this.query = 'Nepal';
             this.fetchWeather({ key: 'Enter' });
           });
       },
       error => {
         console.error('Error fetching geolocation:', error);
         // Fallback to a default location if geolocation fails
-        this.query = 'Mahendranagar'; // Default location
+        this.query = 'Nepal'; // Default location
         this.fetchWeather({ key: 'Enter' });
       }
     );
   } else {
     console.log('Geolocation is not supported by this browser.');
     // Fallback to a default location if geolocation is not supported
-    this.query = 'Mahendranagar';
+    this.query = 'Nepal';
     this.fetchWeather({ key: 'Enter' });
   }
 },
