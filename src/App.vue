@@ -83,14 +83,43 @@ The temperature and weather conditions (like "Clear", "Rain", etc.) are displaye
       }
     },
     mounted() {
-      // Fetch weather data when the component is mounted (on initial load)
-      //we set the query to 'nepal' by default. So, this works as enter key to fetch the weather of that location. If this is removed the placeholder will be nepal by default by we have to press enter key. It means this fetches automatically the default query.
-      if (this.query) {
-        this.fetchWeather({
-          key: 'Enter'
-        }); // Initial fetch if a default query is set
+  // Check if the browser supports geolocation
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        // Get latitude and longitude
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        // Fetch the weather data for the current location using lat/lon
+        fetch(`${this.url_base}?lat=${latitude}&lon=${longitude}&appid=${this.api_key}&units=metric`)
+          .then(response => response.json())
+          .then(data => {
+            this.weather = data; // Update weather data with the fetched results
+            this.query = `${data.name}, ${data.sys.country}`; // Set query to city name and country
+            console.log('Weather data for current location:', this.weather);
+          })
+          .catch(error => {
+            console.error('Error fetching weather data for current location:', error);
+            // Fallback to a default location if fetching fails
+            this.query = 'Mahendranagar';
+            this.fetchWeather({ key: 'Enter' });
+          });
+      },
+      error => {
+        console.error('Error fetching geolocation:', error);
+        // Fallback to a default location if geolocation fails
+        this.query = 'Mahendranagar'; // Default location
+        this.fetchWeather({ key: 'Enter' });
       }
-    },
+    );
+  } else {
+    console.log('Geolocation is not supported by this browser.');
+    // Fallback to a default location if geolocation is not supported
+    this.query = 'Mahendranagar';
+    this.fetchWeather({ key: 'Enter' });
+  }
+},
     watch: {
       query(newQuery) {
         // Auto-fetch when query changes (if you want to fetch as the user types)
